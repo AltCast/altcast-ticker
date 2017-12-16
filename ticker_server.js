@@ -3,6 +3,8 @@ let inputExchanges = process.env.EXCHANGES
 let exchangeList = {
     'BITFINEX': './lib/exchanges/bitfinex'
 }
+let http = require('http')
+let _ = require('lodash')
 
 if (!inputExchanges) {
     console.error(`
@@ -30,7 +32,7 @@ let exchanges = inputExchanges
         let asset = data[1]
         let currency = data[2]
 
-        console.log(asset, currency)
+        console.log(`Listening on ${exchange} for ${asset}/${currency} pair`)
 
         if (!exchangeList[exchange]) throw new Error(`Invalid exchange ${exchange}`)
 
@@ -42,3 +44,22 @@ let exchanges = inputExchanges
             currency: currency
         }, publisher)
     })
+
+
+http.createServer((req, res) => {
+    let data = _.chain(exchanges)
+        .map((exchange) => {
+            return {
+                name: exchange.name,
+                pair: exchange.pair,
+                lastTick: exchange.lastTick
+            }
+        }).groupBy('name')
+        .value()
+
+    let payload = JSON.stringify(data)
+
+    console.log(payload)
+
+    res.end(payload)
+}).listen(process.env.HTTP_PORT)
