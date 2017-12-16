@@ -4,7 +4,8 @@
   "description": "Cryptocurrency ticker backend for TVs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ticker_server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/AltCast/altcast-api/issues"
   },
-  "homepage": "https://github.com/AltCast/altcast-api#readme"
+  "homepage": "https://github.com/AltCast/altcast-api#readme",
+  "dependencies": {
+    "bitfinex-api-node": "^1.2.1",
+    "lodash": "^4.17.4",
+    "redis": "^2.8.0"
+  }
 }
