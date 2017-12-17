@@ -63,7 +63,7 @@ http.createServer((req, res) => {
         .map((exchange) => {
             return {
                 name: exchange.name,
-                pair: exchange.pair,
+                pair: exchange.asset + '/' + exchange.currency,
                 lastTick: exchange.lastTick
             }
         }).groupBy('name')
@@ -74,4 +74,4 @@ http.createServer((req, res) => {
     console.log(payload)
 
     res.end(payload)
-}).listen(process.env.HTTP_PORT)
+}).listen(process.env.HTTP_PORT || 4000)
