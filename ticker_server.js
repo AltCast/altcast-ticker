@@ -62,11 +62,13 @@ http.createServer((req, res) => {
     let data = _.chain(exchanges)
         .map((exchange) => {
             return {
-                name: exchange.name,
+                exchange: exchange.name,
+                name: exchange.asset,
                 pair: exchange.asset + '/' + exchange.currency,
                 lastTick: exchange.lastTick
             }
-        }).groupBy('name')
+        })
+        .groupBy('exchange')
         .value()
 
     let payload = JSON.stringify(data)
