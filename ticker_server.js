@@ -68,11 +68,20 @@ let exchanges = _.chain(pairs)
 */
 
 http.createServer((req, res) => {
-    let data = exchanges.map((exchange) => exchange.toJSON())
+    // CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Request-Method', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET');
+    res.setHeader('Access-Control-Allow-Headers', '*');
 
+    if (req.method === 'OPTIONS') {
+        res.writeHead(200)
+        res.end()
+        return
+    }
+
+    let data = exchanges.map((exchange) => exchange.toJSON())
     let payload = JSON.stringify(data)
 
-    console.log(payload)
-
     res.end(payload)
-}).listen(process.env.HTTP_PORT)
+}).listen(process.env.HTTP_PORT || 4000)
