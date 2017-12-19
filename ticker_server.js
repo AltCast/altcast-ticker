@@ -24,38 +24,51 @@ let publisher = redis.createClient({
     port: process.env.REDIS_PORT || 6379
 })
 
-let exchanges = inputExchanges
-    .split(',')
+let pairs = _.chain(inputExchanges.split(','))
     .map((exchangePair) => {
         let data = exchangePair.trim().split('_')
         let exchange = data[0]
         let asset = data[1]
         let currency = data[2]
 
-        console.log(`Listening on ${exchange} for ${asset}/${currency} pair`)
+        return {
+            exchange: exchange,
+            asset: asset,
+            currency: currency
+        }
+    })
+    .groupBy('exchange')
+    .value()
 
+let exchanges = _.chain(pairs)
+    .keys()
+    .map((exchange) => {
         if (!exchangeList[exchange]) throw new Error(`Invalid exchange ${exchange}`)
 
         let Exchange = require(exchangeList[exchange])
 
+        console.log(`Listening on ${exchange}`)
+
+        let data = pairs[exchange]
+
+        console.log('DATA => ', data)
+
         return new Exchange({
-            auth: false,
-            asset: asset,
-            currency: currency
-        }, publisher)
+            auth: false
+        }, data, publisher)
+    })
+    .value()
+
+//console.log(exchanges)
+
+/*
+
     })
 
+*/
 
 http.createServer((req, res) => {
-    let data = _.chain(exchanges)
-        .map((exchange) => {
-            return {
-                name: exchange.name,
-                pair: exchange.pair,
-                lastTick: exchange.lastTick
-            }
-        }).groupBy('name')
-        .value()
+    let data = exchanges.map((exchange) => exchange.toJSON())
 
     let payload = JSON.stringify(data)
 
