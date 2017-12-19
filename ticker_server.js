@@ -1,10 +1,13 @@
+let STANDARD_TIMER = 5000
 let redis = require('redis')
 let inputExchanges = process.env.EXCHANGES
 let exchangeList = {
-    'BITFINEX': './lib/exchanges/bitfinex'
+    'BITFINEX': './lib/exchanges/bitfinex',
+    'POLONIEX': './lib/exchanges/poloniex'
 }
 let http = require('http')
 let _ = require('lodash')
+let Poloniex = require('./lib/exchanges/poloniex')
 
 if (!inputExchanges) {
     console.error(`
@@ -12,8 +15,8 @@ if (!inputExchanges) {
         Example:
 
         export EXCHANGES=BITFINEX_BTC_USD
-        export EXCHANGES=$EXCHANGES;BITFINEX_LTC_USD
-        export EXCHANGES=$EXCHANGES;POLONIEX_BTC_USD
+        export EXCHANGES=$EXCHANGES:BITFINEX_LTC_USD
+        export EXCHANGES=$EXCHANGES:POLONIEX_BTC_USD
     `)
 
     throw new Error('No exchanges defined.')
@@ -40,23 +43,24 @@ let pairs = _.chain(inputExchanges.split(','))
     .groupBy('exchange')
     .value()
 
+console.log(pairs)
+
 let exchanges = _.chain(pairs)
     .keys()
     .map((exchange) => {
         if (!exchangeList[exchange]) throw new Error(`Invalid exchange ${exchange}`)
 
         let Exchange = require(exchangeList[exchange])
+        let data = pairs[exchange]
 
         console.log(`Listening on ${exchange}`)
 
-        let data = pairs[exchange]
-
         return new Exchange({
-            auth: false
+            auth: false,
+            timer: STANDARD_TIMER
         }, data, publisher)
     })
     .value()
-
 
 http.createServer((req, res) => {
     // CORS

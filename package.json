@@ -19,6 +19,7 @@
   "homepage": "https://github.com/AltCast/altcast-api#readme",
   "dependencies": {
     "bitfinex-api-node": "^1.2.1",
+    "bluebird": "^3.5.1",
     "lodash": "^4.17.4",
     "poloniex-api-node": "^1.6.5",
     "redis": "^2.8.0"
