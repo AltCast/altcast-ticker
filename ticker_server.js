@@ -51,21 +51,12 @@ let exchanges = _.chain(pairs)
 
         let data = pairs[exchange]
 
-        console.log('DATA => ', data)
-
         return new Exchange({
             auth: false
         }, data, publisher)
     })
     .value()
 
-//console.log(exchanges)
-
-/*
-
-    })
-
-*/
 
 http.createServer((req, res) => {
     // CORS
